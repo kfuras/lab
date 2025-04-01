@@ -1,4 +1,4 @@
-# 🛠️ Lab
+# Lab
 
 In this repo, I collect my **labs, projects, scripts, and experiments** which I use for:
 
@@ -6,7 +6,7 @@ In this repo, I collect my **labs, projects, scripts, and experiments** which I 
 - Exploring DevOps and infrastructure tooling
 - Gaining hands-on experience beyond theory
 
-## 🧪 What's inside
+## What's inside
 
 This repository may include:
 
