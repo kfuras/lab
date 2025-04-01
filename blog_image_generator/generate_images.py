@@ -3,7 +3,7 @@ import csv, os
 
 # --- Config ---
 WIDTH, HEIGHT = 1200, 628
-FONT_PATH = "Roboto[wdth,wght].ttf"  # Replace with your actual font path
+FONT_PATH = "fonts/DejaVuSans-Bold.ttf"  # Replace with your actual font path
 FONT_SIZE = 50
 SMALL_FONT_SIZE = 24
 TEXT_COLOR = "white"

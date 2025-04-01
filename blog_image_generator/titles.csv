@@ -1,7 +1,7 @@
 title,category
 Install Roboto Fonts on macOS with Intune,Automation
-Disable Password Prompt for sudo,Cybersecurity
-Deploy Bicep Templates via Azure CLI,Azure Cloud
-My supercool blog post,Homelab
-My other super cool post,IaC
-My third supercool post,Microsoft 365
+ ,Cybersecurity
+ ,Azure Cloud
+ ,Homelab
+ ,IaC
+ ,Microsoft 365
