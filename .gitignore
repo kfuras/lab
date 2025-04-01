@@ -1,0 +1,21 @@
+# Ignore generated output
+generated_images/
+
+# Ignore Mac system files
+.DS_Store
+
+# Ignore Python cache and temp files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Ignore virtual environments (if any)
+venv/
+.env/
+.venv/
+
+# VS Code config (optional)
+.vscode/
+
