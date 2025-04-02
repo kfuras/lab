@@ -5,14 +5,22 @@
 set -e
 
 REPO_NAME=$(basename "$PWD")
+PARENT_NAME=$(basename "$(dirname "$PWD")")
 PROJECT_TYPE=${1#--type=}
 DEV_FOLDER=".devcontainer"
+
+# Prevent creation in language root folders (like python/, bash/)
+if [[ "$REPO_NAME" =~ ^(python|bash|docker|powershell|terraform|docs|azure|kubernetes)$ ]]; then
+  echo "❌ Refusing to create devcontainer in language folder: $REPO_NAME"
+  echo "💡 Navigate into a project folder like blog-image-generator/ and run this script again."
+  exit 1
+fi
 
 if [ -z "$PROJECT_TYPE" ]; then
   PROJECT_TYPE="python"
 fi
 
-echo "Setting up dev container for project: $REPO_NAME (type: $PROJECT_TYPE)"
+echo "🔧 Setting up dev container for project: $REPO_NAME (type: $PROJECT_TYPE)"
 mkdir -p "$DEV_FOLDER"
 
 cat > "$DEV_FOLDER/devcontainer.json" <<EOF
@@ -79,7 +87,7 @@ EOF
 EOF
     ;;
   *)
-    echo "Unknown project type: $PROJECT_TYPE"
+    echo "❌ Unknown project type: $PROJECT_TYPE"
     exit 1
     ;;
 esac
@@ -95,11 +103,8 @@ cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
         "ms-kubernetes-tools.vscode-kubernetes-tools"
       ]
     }
-  },
-  "mounts": [
-    "source=\${localWorkspaceFolder}/fonts,target=/workspace/fonts,type=bind"
-  ]
+  }
 }
 EOF
 
-echo "Dev container setup completed in $PWD/$DEV_FOLDER"
+echo "✅ Dev container setup completed in $PWD/$DEV_FOLDER"
