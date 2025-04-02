@@ -32,14 +32,14 @@ case "$PROJECT_TYPE" in
   python)
     cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
   "image": "mcr.microsoft.com/devcontainers/python:3.11",
-  "postCreateCommand": "apt update && apt install -y neovim && pip install -r requirements.txt || true",
+  "postCreateCommand": "sudo apt update && apt install -y neovim && pip install -r requirements.txt || true",
 EOF
     [ ! -f requirements.txt ] && echo "Pillow" > requirements.txt
     ;;
   node)
     cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
   "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
-  "postCreateCommand": "apt update && apt install -y neovim && npm install || true",
+  "postCreateCommand": "sudo apt update && apt install -y neovim && npm install || true",
 EOF
     ;;
   docker)
@@ -53,25 +53,25 @@ EOF
   bash)
     cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
-  "postCreateCommand": "apt update && apt install -y neovim",
+  "postCreateCommand": "sudo apt update && apt install -y neovim",
 EOF
     ;;
   terraform)
     cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
   "image": "hashicorp/terraform:latest",
-  "postCreateCommand": "apt update && apt install -y vim curl git",
+  "postCreateCommand": "sudo apt update && apt install -y vim curl git",
 EOF
     ;;
   docs)
     cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
-  "postCreateCommand": "apt update && apt install -y neovim markdownlint",
+  "postCreateCommand": "sudo apt update && apt install -y neovim markdownlint",
 EOF
     ;;
   azure)
     cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
-  "postCreateCommand": "apt update && apt install -y curl gnupg powershell neovim && \
+  "postCreateCommand": "sudo apt update && apt install -y curl gnupg powershell neovim && \
     curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
     pwsh -Command 'Install-Module -Name Az -Force -AllowClobber' && \
     az bicep install || true",
@@ -80,7 +80,7 @@ EOF
   kubernetes)
     cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
-  "postCreateCommand": "apt update && apt install -y curl neovim apt-transport-https gnupg && \
+  "postCreateCommand": "sudo apt update && apt install -y curl neovim apt-transport-https gnupg && \
     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
     echo 'deb https://apt.kubernetes.io/ kubernetes-xenial main' > /etc/apt/sources.list.d/kubernetes.list && \
     apt update && apt install -y kubectl helm || true",
