@@ -1,98 +1,80 @@
-#!/bin/bash
+param (
+    [string]$Type = "python"
+)
 
-# Usage: ./add-devcontainer.sh --type python|node|docker|bash|terraform|docs|azure|kubernetes
+$projectName = Split-Path -Leaf (Get-Location)
+$devFolder = ".devcontainer"
+$devFile = "$devFolder\devcontainer.json"
 
-set -e
+Write-Host "📦 Setting up dev container for project: $projectName (type: $Type)"
+New-Item -ItemType Directory -Force -Path $devFolder | Out-Null
 
-REPO_NAME=$(basename "$PWD")
-PARENT_NAME=$(basename "$(dirname "$PWD")")
-PROJECT_TYPE=${1#--type=}
-DEV_FOLDER=".devcontainer"
-
-# Prevent creation in language root folders (like python/, bash/)
-if [[ "$REPO_NAME" =~ ^(python|bash|docker|powershell|terraform|docs|azure|kubernetes)$ ]]; then
-  echo "❌ Refusing to create devcontainer in language folder: $REPO_NAME"
-  echo "💡 Navigate into a project folder like blog-image-generator/ and run this script again."
-  exit 1
-fi
-
-if [ -z "$PROJECT_TYPE" ]; then
-  PROJECT_TYPE="python"
-fi
-
-echo "🔧 Setting up dev container for project: $REPO_NAME (type: $PROJECT_TYPE)"
-mkdir -p "$DEV_FOLDER"
-
-cat > "$DEV_FOLDER/devcontainer.json" <<EOF
+$content = @"
 {
-  "name": "$REPO_NAME",
-EOF
+  "name": "$projectName",
+"@
 
-case "$PROJECT_TYPE" in
-  python)
-    cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
+switch ($Type) {
+  "python" {
+    $content += @"
   "image": "mcr.microsoft.com/devcontainers/python:3.11",
   "postCreateCommand": "apt update && apt install -y neovim && pip install -r requirements.txt || true",
-EOF
-    [ ! -f requirements.txt ] && echo "Pillow" > requirements.txt
-    ;;
-  node)
-    cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
+"@
+    if (-not (Test-Path "requirements.txt")) {
+      "Pillow" | Out-File -Encoding utf8 -FilePath "requirements.txt"
+    }
+  }
+  "node" {
+    $content += @"
   "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
   "postCreateCommand": "apt update && apt install -y neovim && npm install || true",
-EOF
-    ;;
-  docker)
-    cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
+"@
+  }
+  "docker" {
+    $content += @"
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:1": {}
   },
-EOF
-    ;;
-  bash)
-    cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
+"@
+  }
+  "bash" {
+    $content += @"
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
   "postCreateCommand": "apt update && apt install -y neovim",
-EOF
-    ;;
-  terraform)
-    cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
+"@
+  }
+  "terraform" {
+    $content += @"
   "image": "hashicorp/terraform:latest",
   "postCreateCommand": "apt update && apt install -y vim curl git",
-EOF
-    ;;
-  docs)
-    cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
+"@
+  }
+  "docs" {
+    $content += @"
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
   "postCreateCommand": "apt update && apt install -y neovim markdownlint",
-EOF
-    ;;
-  azure)
-    cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
+"@
+  }
+  "azure" {
+    $content += @"
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
-  "postCreateCommand": "apt update && apt install -y curl gnupg powershell neovim && \
-    curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
-    pwsh -Command 'Install-Module -Name Az -Force -AllowClobber' && \
-    az bicep install || true",
-EOF
-    ;;
-  kubernetes)
-    cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
+  "postCreateCommand": "apt update && apt install -y curl gnupg powershell neovim && curl -sL https://aka.ms/InstallAzureCLIDeb | bash && pwsh -Command 'Install-Module -Name Az -Force -AllowClobber' && az bicep install || true",
+"@
+  }
+  "kubernetes" {
+    $content += @"
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
-  "postCreateCommand": "apt update && apt install -y curl neovim apt-transport-https gnupg && \
-    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
-    echo 'deb https://apt.kubernetes.io/ kubernetes-xenial main' > /etc/apt/sources.list.d/kubernetes.list && \
-    apt update && apt install -y kubectl helm || true",
-EOF
-    ;;
-  *)
-    echo "❌ Unknown project type: $PROJECT_TYPE"
+  "postCreateCommand": "apt update && apt install -y curl neovim apt-transport-https gnupg && curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && echo 'deb https://apt.kubernetes.io/ kubernetes-xenial main' > /etc/apt/sources.list.d/kubernetes.list && apt update && apt install -y kubectl helm || true",
+"@
+  }
+  default {
+    Write-Host "❌ Unknown project type: $Type"
     exit 1
-    ;;
-esac
+  }
+}
 
-cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
+$content += @"
   "customizations": {
     "vscode": {
       "extensions": [
@@ -103,8 +85,13 @@ cat >> "$DEV_FOLDER/devcontainer.json" <<EOF
         "ms-kubernetes-tools.vscode-kubernetes-tools"
       ]
     }
-  }
+  },
+  "mounts": [
+    "source=\${localWorkspaceFolder}/fonts,target=/workspace/fonts,type=bind"
+  ]
 }
-EOF
+"@
 
-echo "✅ Dev container setup completed in $PWD/$DEV_FOLDER"
+Set-Content -Path $devFile -Value $content -Encoding UTF8
+Write-Host "✅ Dev container setup completed in $PWD\$devFolder"
+
