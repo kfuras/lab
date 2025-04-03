@@ -1,5 +1,5 @@
-# Ignore generated output
-generated-images/
+# Ignore generated output for "blog-image-generator" project
+python/blog-image-generator/generated-images/
 
 # Ignore Mac system files
 .DS_Store

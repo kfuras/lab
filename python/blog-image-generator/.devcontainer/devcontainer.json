@@ -1,0 +1,16 @@
+{
+  "name": "blog-image-generator",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "postCreateCommand": "apt update && apt install -y neovim && pip install -r requirements.txt || true",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "asvetliakov.vscode-neovim",
+        "esbenp.prettier-vscode",
+        "streetsidesoftware.code-spell-checker",
+        "redhat.vscode-yaml",
+        "ms-kubernetes-tools.vscode-kubernetes-tools"
+      ]
+    }
+  }
+}
