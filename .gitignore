@@ -19,3 +19,4 @@ venv/
 # VS Code config (optional)
 .vscode/
 
+python/blog-image-generator/output.png
